@@ -19,7 +19,8 @@ class Database:
         if self.db.is_connected:
             self.cur = self.db.cursor()
             # self.cur.execute('SELECT * FROM data ORDER BY dusun ,rw ,nama ASC')
-            self.cur.execute('SELECT * FROM data WHERE nama like "imam%"')
+            self.cur.execute(
+                'SELECT * FROM data ORDER BY dusun, rw ASC, keterangan ASC;')
 
             rst = self.cur.fetchall()
             self.write_to_xlsx(rst)
@@ -69,12 +70,12 @@ class Database:
         wb.close()
 
     def read_xlsx(self):
-        wb = openpyxl.load_workbook('output2.xlsx')
+        wb = openpyxl.load_workbook('test1.xlsx')
         ws = wb['MUNFIQ']
         dict_item = {}
         for row in range(3, ws.max_row + 1):
             tmp = []
-            for cell in ws[f'A{row}:N{row}']:
+            for cell in ws[f'A{row}:O{row}']:
                 for x in cell:
                     tmp.append(x.value)
             print(tmp)
@@ -100,14 +101,12 @@ class Database:
         for idx, key in enumerate(data):
             tmp.append(data[key])
 
-        query = 'INSERT INTO data VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        query = 'INSERT INTO data VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
         self.cur.executemany(query, tmp)
         self.db.commit()
         print('Done')
 
 
 db = Database()
-# db.write_to_xlsx()
-# db.read_xlsx()
 db.export_to_xlsx()
 # db.store_to_db()
